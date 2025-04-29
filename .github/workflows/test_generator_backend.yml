@@ -91,7 +91,7 @@ jobs:
 
           echo "Workspace: $GITHUB_WORKSPACE"
           
-          python find_related_files.py backend_relevant_files.txt $GITHUB_WORKSPACE
+            python find_related_files.py backend_relevant_files.txt $GITHUB_WORKSPACE/backend
           
           if [ -s all_files.txt ]; then
             echo "===== Original files with their dependancies ====="

@@ -1,5 +1,5 @@
 """
-Script to find test files related to a list of Python files.
+Script to find test files directly related to a list of Python files.
 
 Usage:
     python find_related_test_files.py <file_with_list_of_files> <workspace_dir>
@@ -20,17 +20,15 @@ def normalize_path(path):
     return str(Path(path).resolve())
 
 
-def get_module_name(file_path):
-    """Extract the module name from a file path."""
-    # Remove .py extension and convert path separators to dots
-    base_name = os.path.splitext(file_path)[0]
-    # Convert path separators to dots and return the module name
-    return base_name.replace('/', '.').replace('\\', '.')
+def is_test_file(file_path):
+    """Check if the file is a test file."""
+    file_name = os.path.basename(file_path)
+    return file_name.startswith("test_") or file_name.endswith("_test.py") or "tests_" in file_name
 
 
-def find_test_files_for_path(file_path, workspace_dir):
-    """Find test files that might be related to the given file path."""
-    related_test_files = []
+def find_direct_test_file(file_path, workspace_dir):
+    """Find the test file that directly tests the given file."""
+    direct_test_files = []
     
     # Get the file name without extension
     file_path = file_path.strip()
@@ -45,32 +43,29 @@ def find_test_files_for_path(file_path, workspace_dir):
         f"{name_without_ext}_tests.py"
     ]
     
-    # Get directory structure to help locate test files
+    # Get directory structure for the file
     file_dir = os.path.dirname(file_path)
-    module_parts = file_dir.split(os.sep)
     
-    # Places to look for test files
+    # Primary search locations for direct tests
     search_locations = [
-        # Same directory
-        file_dir,
-        # Directory named 'tests' at the same level
-        os.path.join(os.path.dirname(file_dir), 'tests'),
-        # Directory named 'test' at the same level
-        os.path.join(os.path.dirname(file_dir), 'test'),
-        # Subdirectory named 'tests'
+        # Tests directory at the same level as the module directory
         os.path.join(file_dir, 'tests'),
-        # Subdirectory named 'test'
-        os.path.join(file_dir, 'test')
+        os.path.join(file_dir, 'test'),
     ]
     
-    # If we're in a module, also look in a tests directory with the same structure
+    # If we're in a module structure, look for tests in specific locations
+    module_parts = file_path.split(os.sep)
+    
+    # Handle specific project structure patterns
     if 'backend' in module_parts:
         backend_index = module_parts.index('backend')
-        # Look for tests directory structure that mirrors the module structure
-        for test_root in ['tests', 'test']:
-            module_path = module_parts[backend_index+1:]
-            test_path = [workspace_dir, 'backend', test_root] + module_path
-            search_locations.append(os.path.join(*test_path))
+        module_name = module_parts[backend_index+1] if backend_index + 1 < len(module_parts) else None
+        
+        if module_name:
+            # Look for test in the module's test directory
+            module_base_path = os.path.join(workspace_dir, 'backend', module_name)
+            search_locations.append(os.path.join(module_base_path, 'tests'))
+            search_locations.append(os.path.join(module_base_path, 'test'))
     
     # Search for test files in all potential locations
     for location in search_locations:
@@ -78,28 +73,26 @@ def find_test_files_for_path(file_path, workspace_dir):
             for pattern in test_patterns:
                 potential_test_file = os.path.join(location, pattern)
                 if os.path.exists(potential_test_file):
-                    related_test_files.append(potential_test_file)
+                    direct_test_files.append(potential_test_file)
     
-    # Also look for test files that might import this module
-    module_name = get_module_name(file_path)
-    pattern = re.compile(r'(from|import)\s+([\w.]+\.)?' + re.escape(name_without_ext) + r'(\s+|\.|$)')
-    
-    # Walk through test directories to find files that might import this module
-    for root, dirs, files in os.walk(os.path.join(workspace_dir, 'backend')):
-        if 'test' in root or 'tests' in root:
-            for file in files:
-                if file.endswith('.py') and ('test' in file or 'Test' in file):
-                    test_file_path = os.path.join(root, file)
-                    try:
-                        with open(test_file_path, 'r', encoding='utf-8') as f:
-                            content = f.read()
-                            if pattern.search(content):
-                                related_test_files.append(test_file_path)
-                    except Exception as e:
-                        print(f"Error reading {test_file_path}: {e}", file=sys.stderr)
+    # If we didn't find any direct tests in the primary locations, 
+    # look in the parent directory's test folder
+    if not direct_test_files:
+        parent_dir = os.path.dirname(file_dir)
+        parent_test_dirs = [
+            os.path.join(parent_dir, 'tests'),
+            os.path.join(parent_dir, 'test')
+        ]
+        
+        for test_dir in parent_test_dirs:
+            if os.path.exists(test_dir):
+                for pattern in test_patterns:
+                    potential_test_file = os.path.join(test_dir, pattern)
+                    if os.path.exists(potential_test_file):
+                        direct_test_files.append(potential_test_file)
     
     # Normalize paths and remove duplicates
-    normalized_test_files = [normalize_path(p) for p in related_test_files]
+    normalized_test_files = [normalize_path(p) for p in direct_test_files]
     return list(set(normalized_test_files))
 
 
@@ -121,12 +114,12 @@ def main():
                 file_path = line.strip()
                 if file_path:
                     # Skip files that are already test files
-                    if 'test' in file_path:
+                    if is_test_file(file_path):
                         all_test_files.append(file_path)
                         continue
                     
-                    # Find related test files
-                    test_files = find_test_files_for_path(file_path, workspace_dir)
+                    # Find direct test files
+                    test_files = find_direct_test_file(file_path, workspace_dir)
                     if test_files:
                         file_to_tests_map[file_path] = test_files
                         all_test_files.extend(test_files)
@@ -146,7 +139,7 @@ def main():
         with open('test_files_mapping.json', 'w') as mapping_file:
             json.dump(file_to_tests_map, mapping_file, indent=2)
         
-        print(f"Found {len(unique_test_files)} related test files.")
+        print(f"Found {len(unique_test_files)} direct test files.")
     
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
