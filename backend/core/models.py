@@ -49,6 +49,8 @@ User = get_user_model()
 URN_REGEX = r"^urn:([a-zA-Z0-9_-]+):([a-zA-Z0-9_-]+):([a-zA-Z0-9_-]+)(?::([a-zA-Z0-9_-]+))?:([0-9A-Za-z\[\]\(\)\-\._:]+)$"
 
 
+#Comment to trigger the CI/CD pipeline to remove after 
+
 def match_urn(urn_string):
     match = re.match(URN_REGEX, urn_string)
     if match:
