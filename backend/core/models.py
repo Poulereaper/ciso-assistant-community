@@ -49,8 +49,6 @@ User = get_user_model()
 URN_REGEX = r"^urn:([a-zA-Z0-9_-]+):([a-zA-Z0-9_-]+):([a-zA-Z0-9_-]+)(?::([a-zA-Z0-9_-]+))?:([0-9A-Za-z\[\]\(\)\-\._:]+)$"
 
 
-#Comment to trigger the CI/CD pipeline to remove after 
-
 def match_urn(urn_string):
     match = re.match(URN_REGEX, urn_string)
     if match:
@@ -4338,6 +4336,13 @@ class TaskNode(AbstractBaseModel, FolderMixin):
     class Meta:
         verbose_name = "Task node"
         verbose_name_plural = "Task nodes"
+
+# Fake method to trigger the CI to remove
+class FaketoRemove:
+    def fakemethod(self):
+        print("This is a fake method to remove")
+        pass
+    pass
 
 
 common_exclude = ["created_at", "updated_at"]
