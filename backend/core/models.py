@@ -4337,13 +4337,7 @@ class TaskNode(AbstractBaseModel, FolderMixin):
         verbose_name = "Task node"
         verbose_name_plural = "Task nodes"
 
-# Fake method to trigger the CI to remove
-class FaketoRemove:
-    def fakemethod(self):
-        print("This is a fake method to remove")
-        pass
-    pass
-
+        
 common_exclude = ["created_at", "updated_at"]
 
 auditlog.register(
