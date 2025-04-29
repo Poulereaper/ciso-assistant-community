@@ -3,7 +3,7 @@ name: Test Generator Backend
 # Trigger on every push or PR to main/develop/feat/test-generator-AI
 on:
   push:
-    branches: [main, develop, feat/test-generator-AI, feat/backend-frontend-test-genai-workflow]
+    branches: [main, develop, feat/test-generator-AI, feat/backend-frontend-test-genai-workflow, test/workflow-tester]
     paths:
       - 'backend/**'
       - 'tools/test_generator/backend/**'
