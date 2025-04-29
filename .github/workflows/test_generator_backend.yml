@@ -119,7 +119,7 @@ jobs:
           
           chmod +x find_related_test_files.py
           
-          python find_related_test_files.py backend_relevant_files.txt $GITHUB_WORKSPACE
+          python find_related_test_files.py backend_relevant_files.txt $GITHUB_WORKSPACE/backend
           
           if [ -s all_test_files.txt ]; then
             echo "===== List of all test files to be analyzed ====="
