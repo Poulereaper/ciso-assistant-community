@@ -122,7 +122,7 @@ def find_related_files(file_path, project_root):
         if file:
             # Convert to relative path from project root
             rel_path = os.path.relpath(file, project_root)
-            related_files.add(rel_path)
+            related_files.add(file)
     
     return related_files
 
