@@ -120,8 +120,7 @@ def find_related_files(file_path, project_root):
     for import_name in direct_imports:
         file = resolve_import_to_filepath(import_name, project_root)
         if file:
-            # Convert to relative path from project root
-            rel_path = os.path.relpath(file, project_root)
+            # keep root path
             related_files.add(file)
     
     return related_files
