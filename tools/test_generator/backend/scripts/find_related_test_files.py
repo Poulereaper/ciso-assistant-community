@@ -125,6 +125,7 @@ def main():
     
     all_test_files = []
     file_to_tests_map = {}
+    source_files_list = []
     
     try:
         # Read the list of files
@@ -132,6 +133,9 @@ def main():
             for line in file_list:
                 file_path = line.strip()
                 if file_path:
+                    # Keep track of all source files for the related_tests.json
+                    source_files_list.append(file_path)
+                    
                     # Skip files that are already test files
                     if is_test_file(file_path):
                         # Resolve the test file path - try both workspace and backend paths
@@ -148,6 +152,7 @@ def main():
                         
                         if resolved_test_path:
                             all_test_files.append(resolved_test_path)
+                            file_to_tests_map[file_path] = [resolved_test_path]  # Test file maps to itself
                         continue
                     
                     # Find direct test files
@@ -155,6 +160,9 @@ def main():
                     if test_files:
                         file_to_tests_map[file_path] = test_files
                         all_test_files.extend(test_files)
+                    else:
+                        # If no test files found, include an empty list in the mapping
+                        file_to_tests_map[file_path] = []
         
         # Remove duplicates while preserving order
         unique_test_files = []
@@ -171,7 +179,21 @@ def main():
         with open('test_files_mapping.json', 'w') as mapping_file:
             json.dump(file_to_tests_map, mapping_file, indent=2)
         
+        # Write the related tests mapping (includes files with no tests)
+        # This ensures all source files are included in the JSON even if they have no tests
+        related_tests_map = {}
+        for source_file in source_files_list:
+            related_tests_map[source_file] = file_to_tests_map.get(source_file, [])
+        
+        with open('related_tests.json', 'w') as related_tests_file:
+            json.dump(related_tests_map, related_tests_file, indent=2)
+        
         print(f"Found {len(unique_test_files)} direct test files.")
+        print(f"Wrote mapping of {len(related_tests_map)} source files to their related tests in 'related_tests.json'.")
+        
+        # Display the contents of the related_tests.json file
+        print("\nContents of related_tests.json:")
+        print(json.dumps(related_tests_map, indent=2))
     
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
