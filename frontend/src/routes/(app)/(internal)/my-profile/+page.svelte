@@ -74,5 +74,19 @@
 				{/each}
 			</div>
 		</div>
+		<!--Fake div to trigger test-->
+		<div class="flex flex-col w-1/2 card bg-white p-2 space-y-4">
+			<h2 class="text-xl mb-1 font-semibold">{m.myUserRoles()}</h2>
+			<div class="overflow-auto space-y-2">
+				{#each $page.data.user.user_roles as role}
+					<div class="flex flex-row items-center">
+						{#if role[1]}
+							<span class="badge variant-soft-primary mr-2">{m.builtin()}</span>
+						{/if}
+						<p class="font-semibold text-sm">{role[0]}</p>
+					</div>
+				{/each}
+			</div>
+		</div>
 	</div>
 </div>
