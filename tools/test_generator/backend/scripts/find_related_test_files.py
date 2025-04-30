@@ -35,6 +35,25 @@ def find_direct_test_file(file_path, workspace_dir):
     file_name = os.path.basename(file_path)
     name_without_ext = os.path.splitext(file_name)[0]
     
+    # Resolve the file path - try both directly from workspace and from backend directory
+    full_paths = [
+        os.path.join(workspace_dir, file_path),  # Full path from workspace root
+        os.path.join(workspace_dir, 'backend', file_path)  # Path relative to backend directory
+    ]
+    
+    resolved_file_path = None
+    for path in full_paths:
+        if os.path.exists(path):
+            resolved_file_path = path
+            break
+    
+    # If we can't find the file at either location, return empty list
+    if not resolved_file_path:
+        print(f"Warning: Could not find source file at any of these locations:")
+        for path in full_paths:
+            print(f"  - {path}")
+        return []
+    
     # Common test file naming patterns
     test_patterns = [
         f"test_{name_without_ext}.py",
@@ -43,8 +62,8 @@ def find_direct_test_file(file_path, workspace_dir):
         f"{name_without_ext}_tests.py"
     ]
     
-    # Get directory structure for the file
-    file_dir = os.path.dirname(file_path)
+    # Get directory structure for the resolved file
+    file_dir = os.path.dirname(resolved_file_path)
     
     # Primary search locations for direct tests
     search_locations = [
@@ -54,7 +73,7 @@ def find_direct_test_file(file_path, workspace_dir):
     ]
     
     # If we're in a module structure, look for tests in specific locations
-    module_parts = file_path.split(os.sep)
+    module_parts = resolved_file_path.split(os.sep)
     
     # Handle specific project structure patterns
     if 'backend' in module_parts:
@@ -115,7 +134,20 @@ def main():
                 if file_path:
                     # Skip files that are already test files
                     if is_test_file(file_path):
-                        all_test_files.append(file_path)
+                        # Resolve the test file path - try both workspace and backend paths
+                        test_path_options = [
+                            os.path.join(workspace_dir, file_path),
+                            os.path.join(workspace_dir, 'backend', file_path)
+                        ]
+                        
+                        resolved_test_path = None
+                        for path in test_path_options:
+                            if os.path.exists(path):
+                                resolved_test_path = path
+                                break
+                        
+                        if resolved_test_path:
+                            all_test_files.append(resolved_test_path)
                         continue
                     
                     # Find direct test files
