@@ -20,7 +20,7 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - uses: Poulereaper/ai-pr-test-generator
+      - uses: https://github.com/Poulereaper/ai-pr-test-generator.git
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
