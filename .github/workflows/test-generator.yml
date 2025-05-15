@@ -1,4 +1,4 @@
-name: Code Review
+name: Code Tester
 
 permissions:
   contents: read
@@ -20,7 +20,7 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - uses: coderabbitai/ai-pr-reviewer@latest
+      - uses: Poulereaper/ai-pr-test-generator@v0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -28,3 +28,6 @@ jobs:
           debug: false
           review_simple_changes: false
           review_comment_lgtm: false
+          ai_api: 'mistral'
+          ai_api_base_url: ''
+          your_test_gen_bot_name: 'CISO Test Generator'
