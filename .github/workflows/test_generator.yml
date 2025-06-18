@@ -29,7 +29,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Generate AI Tests
-        uses: Poulereaper/ai-pr-test-generator@v0.3.8
+        uses: Poulereaper/ai-pr-test-generator@v0.3.9
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
