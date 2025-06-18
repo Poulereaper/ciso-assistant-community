@@ -22,11 +22,17 @@ jobs:
   Test-Generator-AI-Call:
     runs-on: ubuntu-latest
     steps:
-      - uses: Poulereaper/ai-pr-test-generator@v0.3.5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Generate AI Tests
+        uses: Poulereaper/ai-pr-test-generator@v0.3.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY}}
-          
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
         with:
           debug: true
           review_simple_changes: false
