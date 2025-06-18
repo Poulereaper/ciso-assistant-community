@@ -1757,6 +1757,9 @@ class AppliedControlViewSet(BaseModelViewSet):
             progress_field=applied_control.progress_field,
         )
         duplicate_applied_control.owner.set(applied_control.owner.all())
+        duplicate_applied_control.filtering_labels.set(
+            applied_control.filtering_labels.all()
+        )
         if data["duplicate_evidences"]:
             duplicate_related_objects(
                 applied_control, duplicate_applied_control, new_folder, "evidences"
@@ -3945,6 +3948,8 @@ class EvidenceViewSet(BaseModelViewSet):
         "name",
         "timeline_entries",
         "filtering_labels",
+        "findings",
+        "findings_assessments",
     ]
 
     @action(methods=["get"], detail=True)
@@ -5203,6 +5208,7 @@ class FindingsAssessmentViewSet(BaseModelViewSet):
         "folder",
         "authors",
         "status",
+        "evidences",
     ]
     search_fields = ["name", "description", "ref_id"]
 
@@ -5304,6 +5310,7 @@ class FindingViewSet(BaseModelViewSet):
         "findings_assessment",
         "filtering_labels",
         "applied_controls",
+        "evidences",
     ]
 
     @action(detail=False, name="Get status choices")

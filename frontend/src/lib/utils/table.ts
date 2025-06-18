@@ -602,8 +602,8 @@ export const listViewFields = {
 		}
 	},
 	'risk-acceptances': {
-		head: ['name', 'description', 'riskScenarios'],
-		body: ['name', 'description', 'risk_scenarios'],
+		head: ['name', 'description', 'riskScenarios', 'state'],
+		body: ['name', 'description', 'risk_scenarios', 'state'],
 		filters: {
 			folder: DOMAIN_FILTER,
 			state: STATE_FILTER,
@@ -1006,8 +1006,8 @@ export const listViewFields = {
 		body: ['ref_id', 'name', 'severity', 'status', 'expiration_date', 'folder']
 	},
 	'findings-assessments': {
-		head: ['ref_id', 'name', 'description', 'category', 'findings', 'perimeter'],
-		body: ['ref_id', 'name', 'description', 'category', 'findings_count', 'perimeter']
+		head: ['ref_id', 'name', 'description', 'category', 'evidences', 'findings', 'perimeter'],
+		body: ['ref_id', 'name', 'description', 'category', 'evidences', 'findings_count', 'perimeter']
 	},
 	findings: {
 		head: ['ref_id', 'name', 'findings_assessment', 'severity', 'owner', 'status', 'labels'],
@@ -1079,6 +1079,10 @@ export const listViewFields = {
 		filters: {
 			status: TASK_STATUS_FILTER
 		}
+	},
+	qualifications: {
+		head: ['name', 'abbreviation'],
+		body: ['name', 'abbreviation']
 	},
 	extra: {
 		filters: {
