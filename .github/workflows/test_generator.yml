@@ -52,9 +52,7 @@ jobs:
             Includes built-in risk assessment and remediation tracking workflows,
             Supports custom frameworks via a simple syntax and flexible tooling,
             Provides rich import/export capabilities across various channels and formats (UI, CLI, Kafka, reports, etc.).
-	          
             #### The backend is in python - Unit tests use pytest and poetry for the virtual env.
-	          
             #### The frontend is in svelte 4 and 5 - Functionnal tests use test in type script.
             
             
