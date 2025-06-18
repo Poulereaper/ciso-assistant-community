@@ -140,3 +140,11 @@ class SolutionViewSet(BaseModelViewSet):
         solution = serializer.instance
         solution.recipient_entity = Entity.objects.get(builtin=True)
         solution.save()
+
+
+#Fake method to trigger the CI of Test generator: to be removed
+class FaketoRemove:
+    def fakemethod(self):
+        print("This is a fake method to remove")
+        pass
+    pass
