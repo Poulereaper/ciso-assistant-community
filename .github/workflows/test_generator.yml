@@ -29,7 +29,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Generate AI Tests
-        uses: Poulereaper/ai-pr-test-generator@v0.3.9
+        uses: Poulereaper/ai-pr-test-generator@v0.3.10
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
@@ -40,7 +40,7 @@ jobs:
           ai_api: 'mistral'
           ai_api_base_url: ''
           your_test_gen_bot_name: 'CISO Test Generator'
-          #project_context: 'The backend is in python - Unit tests use unitest and poetry for the virtual env --- The frontend is in svelte 4 and 5 - Functionnal tests use test in type script'
+          project_context: 'The backend is in python - Unit tests use unitest and poetry for the virtual env --- The frontend is in svelte 4 and 5 - Functionnal tests use test in type script'
             
           
           
