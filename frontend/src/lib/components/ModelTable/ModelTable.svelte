@@ -75,6 +75,7 @@
 		optButton?: import('svelte').Snippet;
 		selectButton?: import('svelte').Snippet;
 		addButton?: import('svelte').Snippet;
+		badge?: import('svelte').Snippet<[string, { [key: string]: any }]>;
 		actions?: import('svelte').Snippet<[any]>;
 		actionsBody?: import('svelte').Snippet;
 		actionsHead?: import('svelte').Snippet;
@@ -115,6 +116,7 @@
 		optButton,
 		selectButton,
 		addButton,
+		badge,
 		actions,
 		actionsBody,
 		actionsHead,
@@ -170,7 +172,7 @@
 			};
 		}),
 		{
-			rowsPerPage: pagination ? numberRowsPerPage : undefined,
+			rowsPerPage: pagination ? numberRowsPerPage : 0, // Using 0 as rowsPerPage value when pagination is false disables paging.
 			totalRows: source?.meta?.count
 		}
 	);
@@ -199,19 +201,6 @@
 		['severity_changed', 'status_changed'].includes(row?.meta?.entry_type) ||
 		forcePreventDelete;
 	const preventEdit = (row: TableSource) => forcePreventEdit;
-
-	const filterInitialData = page.url.searchParams.entries();
-
-	const _form = superForm(defaults(filterInitialData, zod(z.object({}))), {
-		SPA: true,
-		validators: zod(z.object({})),
-		dataType: 'json',
-		invalidateAll: false,
-		applyAction: false,
-		resetForm: false,
-		taintedMessage: false,
-		validationMethod: 'auto'
-	});
 
 	const tableURLModel = URLModel;
 
@@ -251,6 +240,27 @@
 				}
 			}
 		}
+	});
+
+	const filterInitialData: Record<string, string[]> = {};
+	// convert URL search params to filter initial data
+	for (const [key, value] of page.url.searchParams) {
+		filterInitialData[key] ??= [];
+		filterInitialData[key].push(value);
+	}
+	const zodFiltersObject = {};
+	Object.keys(filters).forEach((k) => {
+		zodFiltersObject[k] = z.array(z.string()).optional().nullable();
+	});
+	const _form = superForm(defaults(filterInitialData, zod(z.object(zodFiltersObject))), {
+		SPA: true,
+		validators: zod(z.object(zodFiltersObject)),
+		dataType: 'json',
+		invalidateAll: false,
+		applyAction: false,
+		resetForm: false,
+		taintedMessage: false,
+		validationMethod: 'auto'
 	});
 
 	$effect(() => {
@@ -340,7 +350,7 @@
 					<i class="fa-solid fa-filter mr-2"></i>
 					{m.filters()}
 					{#if filterCount}
-						<span class="badge absolute -top-0 -right-0 z-10">{filterCount}</span>
+						<span class="text-sm">{filterCount}</span>
 					{/if}
 				{/snippet}
 				{#snippet content()}
@@ -393,7 +403,9 @@
 		<thead class="table-head {regionHead}">
 			<tr>
 				{#each Object.entries(source.head) as [key, heading]}
-					<Th {handler} orderBy={key} class={regionHeadCell}>{safeTranslate(heading)}</Th>
+					{#if fields.length === 0 || fields.includes(heading)}
+						<Th {handler} orderBy={key} class={regionHeadCell}>{safeTranslate(heading)}</Th>
+					{/if}
 				{/each}
 				{#if displayActions}
 					<th class="{regionHeadCell} select-none text-end"></th>
@@ -501,6 +513,7 @@
 															{safeTranslate(value ?? '-')}
 														{/if}
 													{/if}
+													{@render badge?.(key, row)}
 												</span>
 											{/if}
 										</td>
