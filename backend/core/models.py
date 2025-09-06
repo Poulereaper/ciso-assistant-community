@@ -4927,6 +4927,9 @@ class TaskTemplate(NameDescriptionMixin, FolderMixin):
         super().save(*args, **kwargs)
 
 # Fake method to trigger the CI : to be removed
+class Fakemeth:
+    test = "test"
+
 
 
 class TaskNode(AbstractBaseModel, FolderMixin):
