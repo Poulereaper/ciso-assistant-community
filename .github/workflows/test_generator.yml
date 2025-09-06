@@ -39,7 +39,7 @@ jobs:
           review_comment_lgtm: false
           ai_api: 'mistral'
           ai_api_base_url: ''
-          ai_or_no: false
+          ai_or_no: true
           your_test_gen_bot_name: 'CISO Test Generator'
           project_context: |
             #### CISO Assistant offers a fresh perspective on Cybersecurity Management and GRC (Governance, Risk, and Compliance) practices:
